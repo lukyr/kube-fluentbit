@@ -6,6 +6,10 @@ metadata:
   labels:
     k8s-app: fluent-bit
 data:
+  es_host: es_host
+  es_port: es_port
+  es_log_prefix: es_log_prefix
+  fluent_tag: fluent_tag
   # Configuration files: server, input, filters and output
   # ======================================================
   fluent-bit.conf: |
@@ -25,10 +29,9 @@ data:
   input-kubernetes.conf: |
     [INPUT]
         Name              tail
-        Tag               kube.<namespace_name>.<pod_name>.<container_name>
-        Tag_Regex         (?<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?<namespace_name>[^_]+)_(?<container_name>.+)-
+        Tag               ${FLUENT_TAG}
         Path              /var/log/containers/*.log
-        Parser            docker_no_time
+        Parser            docker
         DB                /var/log/flb_kube.db
         Mem_Buf_Limit     5MB
         Skip_Long_Lines   On
@@ -37,7 +40,7 @@ data:
   filter-kubernetes.conf: |
     [FILTER]
         Name                kubernetes
-        Match               kube.*
+        Match               ${FLUENT_TAG}
         Kube_URL            https://kubernetes.default.svc:443
         Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
@@ -50,11 +53,10 @@ data:
   output-elasticsearch.conf: |
     [OUTPUT]
         Name            es
-        Match           *
+        Match           ${FLUENT_TAG}
         Host            ${FLUENT_ELASTICSEARCH_HOST}
         Port            ${FLUENT_ELASTICSEARCH_PORT}
         Logstash_Prefix ${FLUENT_ELASTICSEARCH_LOG_PREFIX}
-        Logstash_DateFormat %Y.%m.%d
         Logstash_Format On
         Replace_Dots    On
         Retry_Limit     False

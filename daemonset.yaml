@@ -27,11 +27,25 @@ spec:
           - containerPort: 2020
         env:
         - name: FLUENT_ELASTICSEARCH_HOST
-          value: "elasticsearch"
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-config
+              key: es_host
         - name: FLUENT_ELASTICSEARCH_PORT
-          value: "9200"
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-config
+              key: es_port
         - name: FLUENT_ELASTICSEARCH_LOG_PREFIX
-          value: "logstash-*"
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-config
+              key: es_log_prefix
+        - name: FLUENT_TAG
+          valueFrom:
+            configMapKeyRef:
+              name: fluent-bit-config
+              key: fluent_tag
         volumeMounts:
         - name: varlog
           mountPath: /var/log
