@@ -82,7 +82,7 @@ data:
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
-        tls             Off
+        tls             On
         tls.verify      Off
         Retry_Limit     False
 
@@ -95,7 +95,7 @@ data:
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
-        tls             Off
+        tls             On
         tls.verify      Off
         Retry_Limit     False
 
@@ -108,7 +108,7 @@ data:
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
-        tls             Off
+        tls             On
         tls.verify      Off
         Retry_Limit     False
 
