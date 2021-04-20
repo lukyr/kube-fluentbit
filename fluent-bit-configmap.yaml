@@ -82,6 +82,7 @@ data:
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
+        tls             Off
         Retry_Limit     False
 
     [OUTPUT]
@@ -93,6 +94,7 @@ data:
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
+        tls             Off
         Retry_Limit     False
 
     [OUTPUT]
@@ -104,6 +106,7 @@ data:
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
+        tls             Off
         Retry_Limit     False
 
   parsers.conf: |
