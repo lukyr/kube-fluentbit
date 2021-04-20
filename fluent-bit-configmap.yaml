@@ -83,6 +83,7 @@ data:
         Logstash_Format On
         Replace_Dots    On
         tls             Off
+        tls.verify      Off
         Retry_Limit     False
 
     [OUTPUT]
@@ -95,6 +96,7 @@ data:
         Logstash_Format On
         Replace_Dots    On
         tls             Off
+        tls.verify      Off
         Retry_Limit     False
 
     [OUTPUT]
@@ -107,6 +109,7 @@ data:
         Logstash_Format On
         Replace_Dots    On
         tls             Off
+        tls.verify      Off
         Retry_Limit     False
 
   parsers.conf: |
