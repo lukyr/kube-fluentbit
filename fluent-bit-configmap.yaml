@@ -8,8 +8,10 @@ metadata:
 data:
   es_host: es_host
   es_port: es_port
-  es_log_prefix: es_log_prefix
-  fluent_tag: fluent_tag
+  tag_one: dmp
+  tag_two: qr
+  tag_third: kube-system
+  env: staging
   # Configuration files: server, input, filters and output
   # ======================================================
   fluent-bit.conf: |
@@ -29,20 +31,30 @@ data:
   input-kubernetes.conf: |
     [INPUT]
         Name              tail
-        Tag               kube.dmp.*
+        Tag               kube.${FLUENT_TAG_ONE}.*
         Path              /var/log/containers/*default*.log
         Parser            docker
-        DB                /var/log/flb_kube_dmp.db
+        DB                /var/log/flb_kube_${FLUENT_TAG_ONE}.db
         Mem_Buf_Limit     5MB
         Skip_Long_Lines   On
         Refresh_Interval  10
 
     [INPUT]
         Name              tail
-        Tag               kube.qr.*
-        Path              /var/log/containers/*qr*.log
+        Tag               kube.${FLUENT_TAG_TWO}.*
+        Path              /var/log/containers/*${FLUENT_TAG_TWO}*.log
         Parser            docker
-        DB                /var/log/flb_kube_qr.db
+        DB                /var/log/flb_kube_${FLUENT_TAG_TWO}.db
+        Mem_Buf_Limit     5MB
+        Skip_Long_Lines   On
+        Refresh_Interval  10
+
+    [INPUT]
+        Name              tail
+        Tag               kube.${FLUENT_TAG_THIRD}.*
+        Path              /var/log/containers/*${FLUENT_TAG_THIRD}*.log
+        Parser            docker
+        DB                /var/log/flb_${FLUENT_TAG_THIRD}.db
         Mem_Buf_Limit     5MB
         Skip_Long_Lines   On
         Refresh_Interval  10
@@ -63,10 +75,10 @@ data:
   output-elasticsearch.conf: |
     [OUTPUT]
         Name            es
-        Match           kube.dmp.*
+        Match           kube.${FLUENT_TAG_ONE}.*
         Host            ${FLUENT_ELASTICSEARCH_HOST}
         Port            ${FLUENT_ELASTICSEARCH_PORT}
-        Logstash_Prefix dmp
+        Logstash_Prefix ${FLUENT_TAG_ONE}-${FLUENT_ENV}
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
@@ -74,10 +86,21 @@ data:
 
     [OUTPUT]
         Name            es
-        Match           kube.qr.*
+        Match           kube.${FLUENT_TAG_TWO}.*
         Host            ${FLUENT_ELASTICSEARCH_HOST}
         Port            ${FLUENT_ELASTICSEARCH_PORT}
-        Logstash_Prefix qr
+        Logstash_Prefix ${FLUENT_TAG_TWO}-${FLUENT_ENV}
+        Time_Key        @timestamp
+        Logstash_Format On
+        Replace_Dots    On
+        Retry_Limit     False
+
+    [OUTPUT]
+        Name            es
+        Match           kube.${FLUENT_TAG_THIRD}.*
+        Host            ${FLUENT_ELASTICSEARCH_HOST}
+        Port            ${FLUENT_ELASTICSEARCH_PORT}
+        Logstash_Prefix ${FLUENT_TAG_THIRD}-${FLUENT_ENV}
         Time_Key        @timestamp
         Logstash_Format On
         Replace_Dots    On
